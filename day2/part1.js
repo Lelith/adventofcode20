@@ -13,19 +13,44 @@ function splitEntry(passwordEntry) {
   return instructions;
 }
 
+
+function occurances(password, pattern) {
+  let count = 0;
+  let position = 0;
+  if (pattern.length > 0 && pattern.length < password.length) {
+    position = password.indexOf(pattern);
+    while (position !== -1) {
+      count += 1;
+      position = password.indexOf(pattern, position + 1);
+    }
+  }
+  return count;
+}
+
+function probePassword(instructions) {
+  const amountOfPattern = occurances(instructions.password, instructions.searchPattern);
+  if (amountOfPattern >= instructions.range[0] && amountOfPattern <= instructions.range[1]) {
+    return true;
+  }
+  return false;
+}
 function testPasswords(data) {
+  let validPasswords = 0;
   data.forEach((passwordEntry) => {
     const instructions = splitEntry(passwordEntry);
-    console.log(instructions);
+    // console.log(instructions);
+    if (probePassword(instructions)) {
+      // console.log('valid password');
+      validPasswords += 1;
+    }
   });
-  return 0;
+  return validPasswords;
 }
 
 try {
-  let data = utils.readInput('./example.txt');
+  // let data = utils.readInput('./example.txt');
+  let data = utils.readInput('./input.txt');
   data = utils.modDataNewlineStr(data);
-  // let data = utils.readInput('./input.txt');
-  console.log(data[0]);
   const validPasswords = testPasswords(data);
   console.log(validPasswords);
 } catch (e) {
