@@ -6,13 +6,13 @@ function countTrees(data) {
   const rowJump = 3;
   data.forEach((mapRow, index) => {
     const rowArr = mapRow.split('');
-    // console.log(pointer);
+    // console.log(`we are in row ${index} and look at ${pointer}`);
     // console.log(rowArr);
     if (rowArr[pointer] === '#' && index !== 0) {
       // console.log(`tree found at ${pointer}`);
       amountTrees += 1;
     }
-    if (pointer + rowJump > rowArr.length) {
+    if (pointer + rowJump >= rowArr.length) {
       pointer = (pointer + rowJump) - rowArr.length;
     } else {
       pointer += rowJump;
