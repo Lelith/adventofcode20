@@ -2,6 +2,7 @@ const fs = require('fs');
 
 
 module.exports = {
+  trimData: data => data.map(item => item.trim()),
   calcManhattandistance:
   (a, b) => ((Math.abs(a[0]) - Math.abs(b[0])) + (Math.abs(a[1]) - Math.abs(b[1]))),
   modDataNewline: (data) => {
