@@ -13,6 +13,10 @@ module.exports = {
     const formatData = data.split('\n').map(item => item.trim());
     return formatData;
   },
+  modDataBlanklines: (data) => {
+    const formatData = data.split(/\n{2,}/g);
+    return formatData;
+  },
   modDataCommas: (data) => {
     const formatData = data.split(',').map(item => parseInt(item.trim(), 10));
     return formatData;
