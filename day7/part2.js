@@ -11,7 +11,6 @@ function saveInstructions(data) {
       const bagObj = {};
       bags.forEach((bag) => {
         let name = (bag.split(' '));
-        console.log(name);
         if (name.length === 3) {
           const amount = parseInt(name.shift(), 10);
           name = name.join('');
@@ -24,15 +23,16 @@ function saveInstructions(data) {
   return instructions;
 }
 
-function findBags(instructions, searchTerm, possibleBags) {
-  return Object.keys(instructions).map((bag) => {
-    if (instructions[bag].indexOf(searchTerm) > -1) {
-      if (possibleBags.indexOf(bag) === -1) {
-        possibleBags.push(bag);
-        findBags(instructions, bag, possibleBags);
-      }
-    }
-  });
+function findBags(instructions, searchTerm) {
+  if (Object.keys(instructions[searchTerm]).length > 0) {
+    let sum = 0;
+    Object.keys(instructions[searchTerm]).forEach((content) => {
+      console.log(`${content} ${instructions[searchTerm][content]}`);
+      sum += Number(instructions[searchTerm][content]);
+      console.log(sum);
+      return sum * findBags(instructions, content);
+    });
+  }
 }
 
 try {
@@ -40,7 +40,9 @@ try {
   // let data = utils.readInput('./input.txt');
   data = utils.modDataNewlineStr(data);
   const instructions = saveInstructions(data);
-  console.log(instructions);
+  // console.log(instructions);
+  const sum = findBags(instructions, 'shinygold');
+  console.log(sum);
 } catch (e) {
   console.log('Error', e.stack);
 }
