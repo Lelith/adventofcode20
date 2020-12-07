@@ -26,23 +26,22 @@ function saveInstructions(data) {
 function findBags(instructions, searchTerm) {
   let sum = 0;
   if (Object.keys(instructions[searchTerm]).length > 0) {
-    Object.keys(instructions[searchTerm]).forEach((content) => {
+    Object.keys(instructions[searchTerm]).reduce((content) => {
       const weight = instructions[searchTerm][content];
-      console.log(weight);
-      sum += weight * findBags(instructions, content);
+      sum += weight + (weight * findBags(instructions, content));
     });
   } else {
-    return 1;
+    return 0;
   }
   return sum;
 }
 
 try {
-  let data = utils.readInput('./example.txt');
-  // let data = utils.readInput('./input.txt');
+  // let data = utils.readInput('./example.txt');
+  let data = utils.readInput('./input.txt');
   data = utils.modDataNewlineStr(data);
   const instructions = saveInstructions(data);
-  console.log(instructions);
+  //  console.log(instructions);
   const sum = findBags(instructions, 'shinygold');
   console.log(sum);
 } catch (e) {
