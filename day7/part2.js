@@ -29,7 +29,7 @@ function findBags(instructions, searchTerm) {
     Object.keys(instructions[searchTerm]).forEach((content) => {
       const weight = instructions[searchTerm][content];
       console.log(weight);
-      sum = weight + weight * findBags(instructions, content);
+      sum += weight * findBags(instructions, content);
     });
   } else {
     return 1;
