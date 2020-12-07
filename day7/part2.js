@@ -26,12 +26,10 @@ function saveInstructions(data) {
 function findBags(instructions, searchTerm) {
   let sum = 0;
   if (Object.keys(instructions[searchTerm]).length > 0) {
-    Object.keys(instructions[searchTerm]).reduce((content) => {
+    Object.keys(instructions[searchTerm]).forEach((content) => {
       const weight = instructions[searchTerm][content];
       sum += weight + (weight * findBags(instructions, content));
     });
-  } else {
-    return 0;
   }
   return sum;
 }
