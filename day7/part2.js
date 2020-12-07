@@ -24,15 +24,17 @@ function saveInstructions(data) {
 }
 
 function findBags(instructions, searchTerm) {
+  let sum = 0;
   if (Object.keys(instructions[searchTerm]).length > 0) {
-    let sum = 0;
     Object.keys(instructions[searchTerm]).forEach((content) => {
-      console.log(`${content} ${instructions[searchTerm][content]}`);
-      sum += Number(instructions[searchTerm][content]);
-      console.log(sum);
-      return sum * findBags(instructions, content);
+      const weight = instructions[searchTerm][content];
+      console.log(weight);
+      sum = weight + weight * findBags(instructions, content);
     });
+  } else {
+    return 1;
   }
+  return sum;
 }
 
 try {
@@ -40,7 +42,7 @@ try {
   // let data = utils.readInput('./input.txt');
   data = utils.modDataNewlineStr(data);
   const instructions = saveInstructions(data);
-  // console.log(instructions);
+  console.log(instructions);
   const sum = findBags(instructions, 'shinygold');
   console.log(sum);
 } catch (e) {
