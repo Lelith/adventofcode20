@@ -55,8 +55,8 @@ function bruteForceProgramm(data) {
   }
   if (!successRun) {
     exchangePos = 0;
-    const changedData = [...data];
     while (exchangePos < (data.length - 1) && !successRun) {
+      const changedData = [...data];
       const instruction = prepareInstruction(changedData[exchangePos]);
       if (instruction[0] === 'nop') {
         changedData[exchangePos] = changedData[exchangePos].replace(/((nop)|\.|,)/g, 'jmp');
