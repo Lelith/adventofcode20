@@ -1,6 +1,6 @@
 const utils = require('../utils');
 
-function findDifferences(data, start) {
+function findDifferences(data) {
   let num3 = 0;
   let num1 = 0;
   data.forEach((item, index) => {
@@ -8,14 +8,6 @@ function findDifferences(data, start) {
       num3 += 1;
     } else {
       let diff = 0;
-      if (index === 0) {
-        diff = item - start;
-        if (diff === 1) {
-          num1 += 1;
-        } else if (diff === 3) {
-          num3 += 1;
-        }
-      }
       diff = data[index + 1] - item;
       if (diff === 1) {
         num1 += 1;
@@ -29,11 +21,12 @@ function findDifferences(data, start) {
 }
 
 try {
-  // let data = utils.readInput('./example.txt');
-  let data = utils.readInput('./input.txt');
+  let data = utils.readInput('./example.txt');
+  // let data = utils.readInput('./input.txt');
   data = utils.modDataNewline(data);
   data = data.sort((a, b) => a - b);
-  findDifferences(data, 0);
+  data.unshift(0);
+  findDifferences(data);
 } catch (e) {
   console.log('Error', e.stack);
 }
