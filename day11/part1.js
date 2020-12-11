@@ -28,33 +28,65 @@ function getAdjancedSeats(floorplan, rowIdx, seatIdx) {
 }
 
 function emptyOccupied(floorplan, newFloorplan) {
+  let seatsChanged = false;
   floorplan.forEach((row, rowIdx) => {
     row.forEach((seat, seatIdx) => {
-      // console.log(seat === '#');
       if (seat === '#') {
         const adjancedSeats = getAdjancedSeats(floorplan, rowIdx, seatIdx);
-        // console.log(adjancedSeats);
-        // console.log(`----${rowIdx}|${seatIdx}-----`);
-        const occupied = adjancedSeats.match(/#/g).length;
-        if (occupied > 3) {
+        const occupied = adjancedSeats.match(/#/g);
+        if (occupied && occupied.length > 3) {
           newFloorplan[rowIdx][seatIdx] = 'L';
+          seatsChanged = true;
         }
       }
     });
   });
-  console.log(newFloorplan);
+  return seatsChanged;
 }
 
+function fillSeats(floorplan, newFloorplan) {
+  let seatsChanged = false;
+  floorplan.forEach((row, rowIdx) => {
+    row.forEach((seat, seatIdx) => {
+      if (seat === 'L') {
+        const adjancedSeats = getAdjancedSeats(floorplan, rowIdx, seatIdx);
+        const vacant = adjancedSeats.match(/#/g);
+        if (vacant === null) {
+          newFloorplan[rowIdx][seatIdx] = '#';
+          seatsChanged = true;
+        }
+      }
+    });
+  });
+  return seatsChanged;
+}
+
+function releaseTheChaos(floorplan) {
+  let seatsChanged = true;
+  let currentFloorplan = _.cloneDeep(floorplan);
+  while (seatsChanged) {
+    const changedFloorplan = _.cloneDeep(currentFloorplan);
+    seatsChanged = emptyOccupied(currentFloorplan, changedFloorplan);
+    if (seatsChanged) {
+      currentFloorplan = _.cloneDeep(changedFloorplan);
+      seatsChanged = fillSeats(currentFloorplan, changedFloorplan);
+      currentFloorplan = _.cloneDeep(changedFloorplan);
+    }
+    // console.log(`seatsChanged? ${seatsChanged}`);
+  }
+  currentFloorplan = currentFloorplan.reduce((acc, val) => acc.concat(val), []);
+  currentFloorplan = currentFloorplan.join('');
+  console.log(currentFloorplan.match(/#/g).length);
+}
+
+
 try {
-  let data = utils.readInput('./example.txt');
-  // let data = utils.readInput('./input.txt');
+  // let data = utils.readInput('./example.txt');
+  let data = utils.readInput('./input.txt');
   data = utils.modDataNewlineStr(data);
   data = data.map((row) => row.replace(/L/g, '#'));
-  data = data.map((row) => row.split(''));
-  // console.log(data);
-  const floorplan = _.cloneDeep(data);
-  emptyOccupied(data, floorplan);
-  // console.log(data);
+  data = data.map((row) => row.split(''));;
+  releaseTheChaos(data);
 } catch (e) {
   console.log('Error', e.stack);
 }
