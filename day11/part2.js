@@ -2,24 +2,25 @@ const utils = require('../utils');
 
 function getAdjancedSeats(floorplan, rowIdx, seatIdx) {
   const row = floorplan[rowIdx];
-  let vacantSeats = 0;
+  let sideSeats = 0;
   let topSeats = 0;
   let bottomSeats = 0;
 
   // get vacant seats on the sides
   const rightSide = row.slice(seatIdx + 1);
   const leftSide = row.slice(0, seatIdx);
-
   const emptySeatRight = rightSide.indexOf('L');
-  const vacantSeatRight = rightSide.indexOf('#');
-  const emptySeatLeft = leftSide.indexOf('L');
-  const vacantSeatLeft = leftSide.indexOf('#');
+  const occupiedSeatRight = rightSide.indexOf('#');
+  const emptySeatLeft = leftSide.lastIndexOf('L');
+  const occupiedSeatLeft = leftSide.lastIndexOf('#');
 
-  if (vacantSeatRight >= 0 && (emptySeatRight < 0 || vacantSeatRight < emptySeatRight)) {
-    vacantSeats += 1;
+  if (occupiedSeatRight >= 0 && (emptySeatRight < 0 || occupiedSeatRight < emptySeatRight)) {
+    // console.log('right seat occupied');
+    sideSeats += 1;
   }
-  if (vacantSeatLeft >= 0 && (emptySeatLeft < 0 || vacantSeatLeft > emptySeatLeft)) {
-    vacantSeats += 1;
+  if (occupiedSeatLeft >= 0 && (emptySeatLeft < 0 || occupiedSeatLeft > emptySeatLeft)) {
+    // console.log('left seat occupied');
+    sideSeats += 1;
   }
 
   // find vacant seats above
@@ -66,7 +67,7 @@ function getAdjancedSeats(floorplan, rowIdx, seatIdx) {
     }
   }
 
-  if (rowIdx < row.length) {
+  if (rowIdx < floorplan.length - 1) {
     // console.log('look for bottomSeats');
     let rowPointer = rowIdx + 1;
     let leftDig = seatIdx - 1;
@@ -75,7 +76,7 @@ function getAdjancedSeats(floorplan, rowIdx, seatIdx) {
     let rightFound = false;
     let bottomFound = false;
 
-    while (bottomSeats < 3 && rowPointer < row.length) {
+    while (bottomSeats < 3 && rowPointer < floorplan.length) {
       if (!leftFound && leftDig >= 0) {
         if (floorplan[rowPointer][leftDig] === '#') {
           // console.log('left diagonal vacant found');
@@ -112,8 +113,8 @@ function getAdjancedSeats(floorplan, rowIdx, seatIdx) {
     }
   }
 
-  // console.log('vacant seats', vacantSeats + topSeats + bottomSeats);
-  return vacantSeats + topSeats + bottomSeats;
+  // console.log('occupied seats', ` side ${sideSeats} : top ${topSeats} : bottom${bottomSeats}`);
+  return sideSeats + topSeats + bottomSeats;
 }
 
 function emptyOccupied(floorplan, newFloorplan) {
@@ -122,7 +123,7 @@ function emptyOccupied(floorplan, newFloorplan) {
     row.forEach((seat, seatIdx) => {
       if (seat === '#') {
         const occupied = getAdjancedSeats(floorplan, rowIdx, seatIdx);
-        if (occupied && occupied.length > 4) {
+        if (occupied && occupied > 4) {
           newFloorplan[rowIdx][seatIdx] = 'L';
           seatsChanged = true;
         }
@@ -137,8 +138,8 @@ function fillSeats(floorplan, newFloorplan) {
   floorplan.forEach((row, rowIdx) => {
     row.forEach((seat, seatIdx) => {
       if (seat === 'L') {
-        const vacant = getAdjancedSeats(floorplan, rowIdx, seatIdx);
-        if (vacant === 0) {
+        const occupied = getAdjancedSeats(floorplan, rowIdx, seatIdx);
+        if (occupied === 0) {
           newFloorplan[rowIdx][seatIdx] = '#';
           seatsChanged = true;
         }
@@ -168,8 +169,8 @@ function releaseTheChaos(floorplan) {
 
 try {
   // let data = utils.readInput('./example2.txt');
-  let data = utils.readInput('./example.txt');
-  //let data = utils.readInput('./input.txt');
+  // let data = utils.readInput('./example.txt');
+  let data = utils.readInput('./input.txt');
   data = utils.modDataNewlineStr(data);
   data = data.map((row) => row.replace(/L/g, '#'));
   data = data.map((row) => row.split(''));
