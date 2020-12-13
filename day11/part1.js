@@ -79,13 +79,12 @@ function releaseTheChaos(floorplan) {
   console.log(currentFloorplan.match(/#/g).length);
 }
 
-
 try {
   // let data = utils.readInput('./example.txt');
   let data = utils.readInput('./input.txt');
   data = utils.modDataNewlineStr(data);
   data = data.map((row) => row.replace(/L/g, '#'));
-  data = data.map((row) => row.split(''));;
+  data = data.map((row) => row.split(''));
   releaseTheChaos(data);
 } catch (e) {
   console.log('Error', e.stack);
