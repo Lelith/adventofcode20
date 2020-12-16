@@ -19,7 +19,7 @@ function probeTicketfields(ruleSet, tickets) {
   tickets = tickets.filter((ticket, idx) => invalidTickets.indexOf(idx) < 0);
   console.log(tickets);
 }
-function generateRuleMap(rules) {
+function generateRulSet(rules) {
   const ruleSet = [];
   rules.forEach((ticketFields) => {
     ticketFields = ticketFields.split(';');
@@ -33,16 +33,60 @@ function generateRuleMap(rules) {
   return ruleSet;
 }
 
+function generateRuleObj(rules) {
+  const ruleObj = {};
+  rules.forEach((rule) => {
+    rule = rule.split(';');
+    const ruleCategory = rule[0];
+    const categoryRange = [];
+    for (let idx = 1; idx < rule.length; idx += 1) {
+      const fieldRange = rule[idx].split('-');
+      for (let jdx = parseInt(fieldRange[0], 10); jdx <= parseInt(fieldRange[1], 10); jdx += 1) {
+        categoryRange.push(jdx);
+      }
+      ruleObj[ruleCategory] = categoryRange;
+    }
+  });
+  return ruleObj;
+}
+
+function findCategory(validTickets, ruleMap) {
+  const categoryAssignments = [];
+  validTickets.forEach((validTicket) => {
+    validTicket = validTicket.split(',');
+
+    const ticketCategories = validTicket.map((value, column) => {
+      const columnCategories = [];
+      value = parseInt(value, 10);
+      // console.log(`in which category fits ${value}`);
+      Object.keys(ruleMap).map((category) => {
+        const categoryRange = ruleMap[category];
+        if (categoryRange.indexOf(value) > 0) {
+          // console.log(`the nr${value}fits into category${category}`);
+          columnCategories.push(category);
+        }
+      });
+      return columnCategories;
+    });
+    categoryAssignments.push(ticketCategories);
+  });
+  console.log(categoryAssignments);
+}
+
 try {
   let rules = utils.readInput('./example_rules.txt');
   // let rules = utils.readInput('./ruleset.txt');
   rules = utils.modDataNewlineStr(rules);
-  const ruleSet = generateRuleMap(rules);
-  let tickets = utils.readInput('./example_tickets.txt');
+  const ruleMap = generateRuleObj(rules);
+
+  let validTickets = utils.readInput('./example_tickets.txt');
   // let tickets = utils.readInput('./other_tickets.txt');
-  tickets = utils.modDataNewlineStr(tickets);
-  probeTicketfields(ruleSet, tickets);
+  // const ruleSet = generateRulSet(rules);
+  validTickets = utils.modDataNewlineStr(validTickets);
+  // const validTickets = probeTicketfields(ruleSet, tickets);
   // let data = utils.readInput('./input.txt');
+  console.log(ruleMap);
+  findCategory(validTickets, ruleMap);
 } catch (e) {
   console.log('Error', e.stack);
 }
