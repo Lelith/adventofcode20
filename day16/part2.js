@@ -52,25 +52,27 @@ function generateRuleObj(rules) {
 
 function findCategory(validTickets, ruleMap) {
   const categoryAssignments = [];
-  validTickets.forEach((validTicket) => {
-    validTicket = validTicket.split(',');
-
-    const ticketCategories = validTicket.map((value, column) => {
-      const columnCategories = [];
-      value = parseInt(value, 10);
-      // console.log(`in which category fits ${value}`);
-      Object.keys(ruleMap).map((category) => {
-        const categoryRange = ruleMap[category];
-        if (categoryRange.indexOf(value) > 0) {
-          // console.log(`the nr${value}fits into category${category}`);
+  validTickets.forEach((column) => {
+    const columnCategories = [];
+    Object.keys(ruleMap).map((category) => {
+      const categoryRange = ruleMap[category];
+      column.forEach((value) => {
+        if (categoryRange.indexOf(value) < 0) {
           columnCategories.push(category);
         }
       });
-      return columnCategories;
+      console.log(columnCategories);
     });
-    categoryAssignments.push(ticketCategories);
   });
-  console.log(categoryAssignments);
+}
+
+function pivotValidTickets(validTickets) {
+  const turnedArr = validTickets[0].map(
+    (_, c) => validTickets.map(
+      (row) => row[c],
+    ),
+  );
+  console.log(turnedArr);
 }
 
 try {
@@ -83,9 +85,10 @@ try {
   // let tickets = utils.readInput('./other_tickets.txt');
   // const ruleSet = generateRulSet(rules);
   validTickets = utils.modDataNewlineStr(validTickets);
+  validTickets = validTickets.map((ticket) => ticket.split(','));
   // const validTickets = probeTicketfields(ruleSet, tickets);
   // let data = utils.readInput('./input.txt');
-  console.log(ruleMap);
+  pivotValidTickets(validTickets);
   findCategory(validTickets, ruleMap);
 } catch (e) {
   console.log('Error', e.stack);
